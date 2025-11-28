@@ -1,0 +1,9 @@
+body { background: linear-gradient(to bottom, #6a1b9a, #ce93d8); color: white; height: 100vh; display: flex; justify-content: center; align-items: center; margin: 0; }
+.container { display: flex; align-items: center; background: rgba(255,255,255,0.1); padding: 40px; border-radius: 20px; width: 600px; backdrop-filter: blur(5px); box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+.form { width: 300px; margin-right: 50px; }
+.form-group { margin-bottom: 20px; }
+label { display: block; margin-bottom: 5px; }
+.links { text-align: center; margin-top: 10px; }
+.links a { color: white; }
+.illustration { width: 200px; height: 200px; filter: drop-shadow(0 0 10px #e040fb); }
+.p-button-purple { background: linear-gradient(to right, #7b1fa2, #ab47bc); border: none; }
