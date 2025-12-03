@@ -52,6 +52,7 @@ export interface Profesor {
   id: number;
   nombre: string;
   apellido: string;
+  titulo: string;
   email: string;
   usuario_id: number;
   created_at: string;
@@ -138,6 +139,13 @@ const database = {
     { id: 4, nombre: 'Estudiante', description: 'Estudiante (sin acceso a este sistema)' }
   ],
 
+  aulas: [
+    { id: 1, nombre: 'A1', capacidad: 40 },
+    { id: 2, nombre: 'A2', capacidad: 35 },
+    { id: 3, nombre: 'Laboratorio 1', capacidad: 25 },
+    { id: 4, nombre: 'Auditorio', capacidad: 100 }
+  ],
+
   usuarios: [
     { id: 1, nombre_usuario: 'servicios@unsis.edu', password_hash: 'hash123', rol_id: 1, created_at: '2025-01-15' },
     { id: 2, nombre_usuario: 'jefe.informatica@unsis.edu', password_hash: 'hash456', rol_id: 2, created_at: '2025-01-16' },
@@ -154,19 +162,21 @@ const database = {
     { id: 1, clave: 'MAT101', nombre: 'Matemáticas I', semestre: 1, es_inglesa: false, carrera_id: 1, created_at: '2024-01-01', updated_at: '2025-01-01' },
     { id: 2, clave: 'FIS101', nombre: 'Física General', semestre: 1, es_inglesa: false, carrera_id: 1, created_at: '2024-01-01', updated_at: '2025-01-01' },
     { id: 3, clave: 'QUI102', nombre: 'Química Orgánica', semestre: 2, es_inglesa: false, carrera_id: 1, created_at: '2024-01-01', updated_at: '2025-01-01' },
-    { id: 4, clave: 'ANA101', nombre: 'Anatomía Humana', semestre: 1, es_inglesa: false, carrera_id: 2, created_at: '2024-01-01', updated_at: '2025-01-01' }
+    { id: 4, clave: 'ANA101', nombre: 'Anatomía Humana', semestre: 1, es_inglesa: false, carrera_id: 2, created_at: '2024-01-01', updated_at: '2025-01-01' },
+    { id: 5, clave: 'ADM101', nombre: 'Introducción a la Administración', semestre: 1, es_inglesa: false, carrera_id: 3, created_at: '2024-01-01', updated_at: '2025-01-01' }
   ],
 
   profesores: [
-    { id: 1, nombre: 'Juan', apellido: 'García', email: 'juan.garcia@unsis.edu', usuario_id: 1, created_at: '2024-02-01' },
-    { id: 2, nombre: 'María', apellido: 'López', email: 'maria.lopez@unsis.edu', usuario_id: 2, created_at: '2024-02-01' },
-    { id: 3, nombre: 'Carlos', apellido: 'Martínez', email: 'carlos.martinez@unsis.edu', usuario_id: 3, created_at: '2024-02-01' }
+    { id: 1, nombre: 'Juan', apellido: 'García', titulo: 'Dr.', email: 'juan.garcia@unsis.edu', usuario_id: 1, created_at: '2024-02-01' },
+    { id: 2, nombre: 'María', apellido: 'López', titulo: 'Mtra.', email: 'maria.lopez@unsis.edu', usuario_id: 2, created_at: '2024-02-01' },
+    { id: 3, nombre: 'Carlos', apellido: 'Martínez', titulo: 'Ing.', email: 'carlos.martinez@unsis.edu', usuario_id: 3, created_at: '2024-02-01' }
   ],
 
   grupos: [
     { id: 1, nombre: 'INF-101A', semestre: 1, carrera_id: 1, profesor_id: 1, materia_id: 1, capacidad_alumnos: 30, aula_id: 1, tipo: 'teoría', created_at: '2025-01-20' },
     { id: 2, nombre: 'INF-102B', semestre: 1, carrera_id: 1, profesor_id: 2, materia_id: 2, capacidad_alumnos: 25, aula_id: 2, tipo: 'teoría', created_at: '2025-01-20' },
-    { id: 3, nombre: 'MED-101A', semestre: 1, carrera_id: 2, profesor_id: 3, materia_id: 4, capacidad_alumnos: 20, aula_id: 3, tipo: 'teoría', created_at: '2025-01-20' }
+    { id: 3, nombre: 'MED-101A', semestre: 1, carrera_id: 2, profesor_id: 3, materia_id: 4, capacidad_alumnos: 20, aula_id: 3, tipo: 'teoría', created_at: '2025-01-20' },
+    { id: 4, nombre: 'ADM-101A', semestre: 1, carrera_id: 3, profesor_id: 1, materia_id: 5, capacidad_alumnos: 35, aula_id: 1, tipo: 'teoría', created_at: '2025-01-20' }
   ],
 
   tipos_examen: [
@@ -292,13 +302,13 @@ export const obtenerTiposExamen = (): TipoExamen[] => {
 export const actualizarExamen = (id: number, cambios: Partial<Examen>): Examen | null => {
   const examen = database.examenes.find(e => e.id === id);
   if (!examen) return null;
-  
+
   const antiguo = { ...examen };
   Object.assign(examen, cambios, { updated_at: new Date().toISOString() });
-  
+
   // TODO: Registrar en auditoría
   console.log('Auditoría:', { usuario_id: 1, accion: 'UPDATE', cambios: { antiguo, nuevo: examen } });
-  
+
   return examen;
 };
 
@@ -360,6 +370,14 @@ export const obtenerProfesores = (): Profesor[] => {
  */
 export const obtenerCarreras = () => {
   return database.carreras;
+};
+
+/**
+ * AULAS - Obtener todas las aulas
+ * TODO: Reemplazar con: GET /api/aulas
+ */
+export const obtenerAulas = () => {
+  return database.aulas;
 };
 
 /**

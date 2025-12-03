@@ -36,7 +36,6 @@
         >
           <i class="pi pi-users"></i>
         </div>
-        
         <div 
           class="nav-item" 
           :class="{ active: currentView === 'materias' }" 
@@ -53,14 +52,14 @@
           >
           <i class="pi pi-chart-line"></i>
           </div>
-          <!--div 
+          <div 
           class="nav-item" 
           @click="irAProgramarExamenes"
           title="Programar Exámenes"
-        
+          >
           <i class="pi pi-calendar-plus"></i>
         </div>
-        -->
+        
         <div 
           class="nav-item" 
           :class="{ active: currentView === 'auditoria' }" 
@@ -99,26 +98,73 @@
 
       <!-- Vista Exámenes -->
       <!-- Vista Exámenes -->
+      <!-- Vista Exámenes -->
       <div v-show="currentView === 'examenes'" class="view-container">
-        <div class="exams-layout">
-          <!-- Panel Lateral Izquierdo: Calendario + Tasks -->
-          <div class="sidebar-panel">
-            <!-- Calendario Mini -->
-            <div class="mini-calendar-card">
-              <h4>{{ nombreMes(mesActual) }} {{ annoActual }}</h4>
+        <div class="dashboard-hero">
+          <div class="hero-content">
+            <h1>Panel de Control de Exámenes</h1>
+            <p>Gestiona, programa y supervisa las evaluaciones académicas.</p>
+            <div class="hero-stats">
+              <div class="hero-stat">
+                <span class="hero-value">{{ totalExamenesCarrera }}</span>
+                <span class="hero-label">Total Exámenes</span>
+              </div>
+              <div class="hero-divider"></div>
+              <div class="hero-stat">
+                <span class="hero-value">{{ examenesPendientes }}</span>
+                <span class="hero-label">Pendientes</span>
+              </div>
+              <div class="hero-divider"></div>
+              <div class="hero-stat">
+                <span class="hero-value">{{ examenesCompletadosHoy }}</span>
+                <span class="hero-label">Hoy</span>
+              </div>
+            </div>
+          </div>
+          <div class="hero-decoration">
+            <i class="pi pi-chart-bar"></i>
+          </div>
+        </div>
+
+        <div class="exams-complex-layout">
+          <!-- Columna Izquierda: Accesos Rápidos y Calendario -->
+          <div class="left-column">
+            <div class="quick-actions-card glass-panel">
+              <h3>Accesos Rápidos</h3>
+              <div class="action-buttons-grid">
+                <button class="quick-btn primary" @click="abrirNuevoExamen">
+                  <div class="btn-icon"><i class="pi pi-plus"></i></div>
+                  <span>Nuevo Examen</span>
+                </button>
+                <button class="quick-btn secondary" @click="currentView = 'calendario'">
+                  <div class="btn-icon"><i class="pi pi-calendar"></i></div>
+                  <span>Ver Calendario</span>
+                </button>
+                <button class="quick-btn secondary" @click="currentView = 'progreso'">
+                  <div class="btn-icon"><i class="pi pi-chart-line"></i></div>
+                  <span>Progreso</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="mini-calendar-card glass-panel">
+              <div class="card-header-simple">
+                <h4>Calendario</h4>
+                <span class="current-month">{{ nombreMes(mesActual) }} {{ annoActual }}</span>
+              </div>
               <div class="mini-calendar">
                 <div class="mini-calendar-nav">
-                  <button @click="mesAnterior" class="mini-btn">&lt;</button>
-                  <button @click="mesSiguiente" class="mini-btn">&gt;</button>
+                  <button @click="mesAnterior" class="mini-nav-btn"><i class="pi pi-chevron-left"></i></button>
+                  <button @click="mesSiguiente" class="mini-nav-btn"><i class="pi pi-chevron-right"></i></button>
                 </div>
                 <div class="mini-calendar-grid">
-                  <div class="mini-day-label">Dom</div>
-                  <div class="mini-day-label">Lun</div>
-                  <div class="mini-day-label">Mar</div>
-                  <div class="mini-day-label">Mié</div>
-                  <div class="mini-day-label">Jue</div>
-                  <div class="mini-day-label">Vie</div>
-                  <div class="mini-day-label">Sab</div>
+                  <div class="mini-day-label">D</div>
+                  <div class="mini-day-label">L</div>
+                  <div class="mini-day-label">M</div>
+                  <div class="mini-day-label">M</div>
+                  <div class="mini-day-label">J</div>
+                  <div class="mini-day-label">V</div>
+                  <div class="mini-day-label">S</div>
                   <div 
                     v-for="dia in diasDelMes" 
                     :key="dia" 
@@ -134,179 +180,97 @@
                   </div>
                 </div>
               </div>
-              
-              <!-- Leyenda -->
-              <div class="calendar-legend">
-                <div class="legend-item">
-                  <span class="legend-dot exam-week-dot"></span>
-                  <span>Semana de Exámenes</span>
-                </div>
-                <div class="legend-item">
-                  <span class="legend-dot exam-dot"></span>
-                  <span>Examen Programado</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Lista de Exámenes como Tasks -->
-            <div class="tasks-card">
-              <h4>Exámenes Programados</h4>
-              <div v-if="examenesVisibles.length > 0" class="tasks-list">
-                <div 
-                  v-for="examen in examenesVisibles.slice(0, 5)" 
-                  :key="examen.id" 
-                  class="task-item"
-                >
-                  <div class="task-check">
-                    <input type="checkbox" :id="'exam-' + examen.id" />
-                  </div>
-                  <div class="task-content">
-                    <p class="task-title">{{ obtenerNombreMateria(examen.materia_id) }}</p>
-                    <p class="task-date">{{ formatearFecha(examen.fecha) }}</p>
-                    <p class="task-time">{{ examen.hora_inicio }}</p>
-                  </div>
-                  <span class="task-badge">{{ obtenerNombreTipoExamen(examen.tipo_examen_id) }}</span>
-                </div>
-              </div>
-              <div v-else class="no-tasks">
-                <p>No hay exámenes</p>
-              </div>
-              <button v-if="examenesVisibles.length > 5" class="see-more-btn" @click="verTodosExamenes">
-                Ver más ({{ examenesVisibles.length - 5 }})
-              </button>
             </div>
           </div>
 
-          <!-- Panel Principal: Resumen y Estadísticas -->
-          <div class="main-panel">
-            <!-- Banner de Semana de Exámenes -->
-            <div v-if="estamosEnSemanaExamenes" class="exam-week-banner">
-              <div class="banner-icon">
-                <i class="pi pi-calendar-times"></i>
-              </div>
-              <div class="banner-content">
-                <h3>Semana de Exámenes en Curso</h3>
-                <p>Segunda Evaluación Parcial • 01 - 08 de Diciembre 2025</p>
-                <div class="banner-progress">
-                  <div class="progress-info">
-                    <span>Día {{ diaActualSemanaExamenes }} de 6</span>
-                    <span>{{ examenesCompletadosHoy }} / {{ examenesProgramadosHoy }} exámenes completados hoy</span>
-                  </div>
-                  <div class="progress-bar-banner">
-                    <div class="progress-fill-banner" :style="{ width: progresoSemana + '%' }"></div>
+          <!-- Columna Central: Próximos Exámenes -->
+          <div class="center-column">
+            <div class="section-title-row">
+              <h3>Próximos Exámenes</h3>
+              <button class="link-btn" @click="currentView = 'calendario'">Ver todos</button>
+            </div>
+            
+            <div class="upcoming-timeline">
+              <div v-if="proximosExamenes.length > 0" class="timeline-container">
+                <div 
+                  v-for="(examen, index) in proximosExamenes" 
+                  :key="examen.id"
+                  class="timeline-item"
+                  :style="{ animationDelay: `${index * 0.1}s` }"
+                >
+                  <div class="timeline-marker"></div>
+                  <div class="timeline-content glass-panel hover-effect">
+                    <div class="exam-date-badge">
+                      <span class="day">{{ obtenerDia(examen.fecha) }}</span>
+                      <span class="month">{{ obtenerMesCorto(examen.fecha) }}</span>
+                    </div>
+                    <div class="exam-info">
+                      <h4>{{ obtenerNombreMateria(examen.materia_id) }}</h4>
+                      <div class="exam-meta">
+                        <span class="meta-item"><i class="pi pi-clock"></i> {{ examen.hora_inicio }}</span>
+                        <span class="meta-item"><i class="pi pi-map-marker"></i> {{ examen.aula_id }}</span>
+                        <span class="meta-item"><i class="pi pi-users"></i> {{ obtenerNombreGrupo(examen.grupo_id) }}</span>
+                      </div>
+                    </div>
+                    <div class="exam-type-tag" :class="`type-${examen.tipo_examen_id}`">
+                      {{ obtenerNombreTipoExamen(examen.tipo_examen_id) }}
+                    </div>
+                    <button class="more-options-btn" @click="verDetallesExamen(examen)">
+                      <i class="pi pi-ellipsis-v"></i>
+                    </button>
                   </div>
                 </div>
+              </div>
+              <div v-else class="empty-state-modern">
+                <div class="empty-icon-bg">
+                  <i class="pi pi-calendar-plus"></i>
+                </div>
+                <h4>Sin exámenes próximos</h4>
+                <p>No hay exámenes programados para los próximos días.</p>
+                <button class="btn-primary-soft" @click="abrirNuevoExamen">Programar Ahora</button>
               </div>
             </div>
+          </div>
 
-            <!-- Cards de Estadísticas -->
-            <div class="stats-grid">
-              <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                  <i class="pi pi-calendar"></i>
-                </div>
-                <div class="stat-content">
-                  <h4>{{ totalExamenesCarrera }}</h4>
-                  <p>Exámenes Programados</p>
-                </div>
-              </div>
-
-              <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-                  <i class="pi pi-clock"></i>
-                </div>
-                <div class="stat-content">
-                  <h4>{{ examenesPendientes }}</h4>
-                  <p>Pendientes</p>
-                </div>
-              </div>
-
-              <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+          <!-- Columna Derecha: Estadísticas y Distribución -->
+          <div class="right-column">
+            <div class="stats-summary-card glass-panel">
+              <h3>Resumen</h3>
+              <div class="stat-row">
+                <div class="stat-icon-box blue">
                   <i class="pi pi-users"></i>
                 </div>
-                <div class="stat-content">
-                  <h4>{{ gruposActivos }}</h4>
-                  <p>Grupos Activos</p>
+                <div class="stat-details">
+                  <span class="stat-value">{{ gruposActivos }}</span>
+                  <span class="stat-label">Grupos Activos</span>
                 </div>
               </div>
-
-              <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+              <div class="stat-row">
+                <div class="stat-icon-box green">
                   <i class="pi pi-check-circle"></i>
                 </div>
-                <div class="stat-content">
-                  <h4>{{ examenesCompletados }}</h4>
-                  <p>Completados</p>
+                <div class="stat-details">
+                  <span class="stat-value">{{ examenesCompletados }}</span>
+                  <span class="stat-label">Completados</span>
                 </div>
               </div>
             </div>
 
-            <!-- Próximos Exámenes -->
-            <div class="upcoming-exams-card">
-              <div class="card-header-custom">
-                <h3>Próximos Exámenes</h3>
-                <button class="btn-view-all" @click="currentView = 'calendario'">
-                  Ver todos
-                  <i class="pi pi-arrow-right"></i>
-                </button>
-              </div>
-              
-              <div v-if="proximosExamenes.length > 0" class="upcoming-list">
-                <div 
-                  v-for="examen in proximosExamenes" 
-                  :key="examen.id"
-                  class="upcoming-item"
-                >
-                  <div class="upcoming-date">
-                    <span class="date-day">{{ obtenerDia(examen.fecha) }}</span>
-                    <span class="date-month">{{ obtenerMesCorto(examen.fecha) }}</span>
-                  </div>
-                  <div class="upcoming-details">
-                    <h4>{{ obtenerNombreMateria(examen.materia_id) }}</h4>
-                    <div class="upcoming-meta">
-                      <span><i class="pi pi-clock"></i> {{ examen.hora_inicio }}</span>
-                      <span><i class="pi pi-map-marker"></i> {{ examen.aula_id }}</span>
-                      <span><i class="pi pi-users"></i> {{ obtenerNombreGrupo(examen.grupo_id) }}</span>
-                    </div>
-                    <span class="upcoming-type">{{ obtenerNombreTipoExamen(examen.tipo_examen_id) }}</span>
-                  </div>
-                  <div class="upcoming-actions">
-                    <button class="action-icon" @click="verDetallesExamen(examen)" title="Ver detalles">
-                      <i class="pi pi-eye"></i>
-                    </button>
-                    <button class="action-icon" @click="editarExamen(examen)" title="Editar">
-                      <i class="pi pi-pencil"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div v-else class="empty-upcoming">
-                <i class="pi pi-calendar-plus"></i>
-                <p>No hay exámenes programados próximamente</p>
-                <button class="btn-add-exam" @click="abrirNuevoExamen">
-                  <i class="pi pi-plus"></i>
-                  Programar Examen
-                </button>
-              </div>
-            </div>
-
-            <!-- Distribución por Tipo de Examen -->
-            <div class="distribution-card">
-              <h3>Distribución de Exámenes</h3>
-              <div class="distribution-chart">
+            <div class="distribution-card glass-panel">
+              <h3>Distribución</h3>
+              <div class="distribution-list">
                 <div 
                   v-for="tipo in distribucionExamenes" 
                   :key="tipo.id"
-                  class="distribution-bar"
+                  class="dist-item"
                 >
-                  <div class="bar-label">
-                    <span>{{ tipo.nombre }}</span>
-                    <span class="bar-count">{{ tipo.cantidad }}</span>
+                  <div class="dist-header">
+                    <span class="dist-name">{{ tipo.nombre }}</span>
+                    <span class="dist-count">{{ tipo.cantidad }}</span>
                   </div>
-                  <div class="bar-container">
+                  <div class="dist-bar-bg">
                     <div 
-                      class="bar-fill" 
+                      class="dist-bar-fill" 
                       :style="{ 
                         width: (tipo.cantidad / totalExamenesCarrera * 100) + '%',
                         background: tipo.color 
@@ -511,8 +475,8 @@ const examenesVisibles = computed(() => {
   if (usuarioRol.value === 'servicios_escolares') {
     return examenesData.value;
   }
-  return examenesData.value.filter(exam => {
-    const grupo = gruposData.value.find(g => g.id === exam.grupo_id);
+  return examenesData.value.filter((exam: any) => {
+    const grupo = gruposData.value.find((g: any) => g.id === exam.grupo_id);
     return grupo?.carrera_id === carreraSeleccionada.value;
   });
 });
@@ -521,7 +485,7 @@ const gruposVisibles = computed(() => {
   if (usuarioRol.value === 'servicios_escolares') {
     return gruposData.value;
   }
-  return gruposData.value.filter(g => g.carrera_id === carreraSeleccionada.value);
+  return gruposData.value.filter((g: any) => g.carrera_id === carreraSeleccionada.value);
 });
 
 // Ciclo de vida
@@ -657,7 +621,7 @@ const mesSiguiente = () => {
 const tienExamen = (dia: number | null) => {
   if (!dia) return false;
   const fecha = `${annoActual.value}-${String(mesActual.value + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
-  return examenesVisibles.value.some(exam => exam.fecha === fecha);
+  return examenesVisibles.value.some((exam: any) => exam.fecha === fecha);
 };
 
 const esHoy = (dia: number | null) => {
@@ -675,7 +639,7 @@ const seleccionarDia = (dia: number | null) => {
 };
 
 const contarExamenesPorMateria = (materiaId: number) => {
-  return examenesVisibles.value.filter(exam => exam.materia_id === materiaId).length;
+  return examenesVisibles.value.filter((exam: any) => exam.materia_id === materiaId).length;
 };
 
 const irAProgramarExamenes = () => {
@@ -688,11 +652,11 @@ const irAProgramarExamenes = () => {
 const totalExamenesCarrera = computed(() => examenesVisibles.value.length);
 
 const examenesPendientes = computed(() => {
-  return examenesVisibles.value.filter(e => e.estado === 'pendiente').length;
+  return examenesVisibles.value.filter((e: any) => e.estado === 'pendiente').length;
 });
 
 const examenesCompletados = computed(() => {
-  return examenesVisibles.value.filter(e => e.estado === 'aprobado').length;
+  return examenesVisibles.value.filter((e: any) => e.estado === 'aprobado').length;
 });
 
 const gruposActivos = computed(() => gruposVisibles.value.length);
@@ -702,18 +666,18 @@ const proximosExamenes = computed(() => {
   hoy.setHours(0, 0, 0, 0);
   
   return examenesVisibles.value
-    .filter(exam => {
+    .filter((exam: any) => {
       const fechaExamen = new Date(exam.fecha);
       return fechaExamen >= hoy;
     })
-    .sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime())
+    .sort((a: any, b: any) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime())
     .slice(0, 5);
 });
 
 const distribucionExamenes = computed(() => {
-  const distribucion = tiposExamenData.value.map(tipo => {
+  const distribucion = tiposExamenData.value.map((tipo: any) => {
     const cantidad = examenesVisibles.value.filter(
-      e => e.tipo_examen_id === tipo.id
+      (e: any) => e.tipo_examen_id === tipo.id
     ).length;
     
     return {
@@ -722,7 +686,7 @@ const distribucionExamenes = computed(() => {
       cantidad,
       color: obtenerColorTipo(tipo.id)
     };
-  }).filter(d => d.cantidad > 0);
+  }).filter((d: any) => d.cantidad > 0);
   
   return distribucion;
 });
@@ -761,13 +725,13 @@ const progresoSemana = computed(() => {
 
 const examenesProgramadosHoy = computed(() => {
   const hoy = new Date().toISOString().split('T')[0];
-  return examenesVisibles.value.filter(e => e.fecha === hoy).length;
+  return examenesVisibles.value.filter((e: any) => e.fecha === hoy).length;
 });
 
 const examenesCompletadosHoy = computed(() => {
   const hoy = new Date().toISOString().split('T')[0];
   return examenesVisibles.value.filter(
-    e => e.fecha === hoy && e.estado === 'aprobado'
+    (e: any) => e.fecha === hoy && e.estado === 'aprobado'
   ).length;
 });
 
@@ -804,7 +768,8 @@ const obtenerMesCorto = (fecha: string) => {
   const [year, month] = fecha.split('-');
   const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 
                  'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-  return meses[parseInt(month) - 1];
+  const monthIndex = month ? parseInt(month) - 1 : 0;
+  return meses[monthIndex] || '';
 };
 
 const obtenerColorTipo = (tipoId: number) => {

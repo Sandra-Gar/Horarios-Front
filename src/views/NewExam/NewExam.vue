@@ -54,6 +54,7 @@
                   {{ grupo.nombre }} - {{ grupo.semestre }}º Semestre
                 </option>
               </select>
+              <p v-if="gruposFiltrados.length === 0" class="error-text">No hay grupos asignados a tu carrera.</p>
             </div>
             <!-- Materia -->
             <div class="form-group full-width">
@@ -64,6 +65,7 @@
                   {{ materia.nombre }} ({{ materia.clave }})
                 </option>
               </select>
+              <p v-if="materiasFiltradas.length === 0" class="error-text">No hay materias asignadas a tu carrera.</p>
             </div>
             <!-- Fecha -->
             <div class="form-group">
@@ -283,6 +285,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import * as examService from '../../services/examService';
+import Modal from '../../components/Modal.vue';
 
 const router = useRouter();
 
@@ -357,7 +360,7 @@ const fechaMaxima = computed(() => {
   return '';
 });
 const manejarCambioTipoExamen = () => {
-  const tipoSeleccionado = tiposExamen.value.find(t => t.id == form.value.tipo_examen_id);
+  const tipoSeleccionado = tiposExamen.value.find((t: any) => t.id == form.value.tipo_examen_id);
   if (tipoSeleccionado && tipoSeleccionado.nombre.toLowerCase().includes('parcial')) {
     esParcial.value = true;
   } else {
@@ -426,17 +429,17 @@ const fechaMinima = computed(() => {
 
 const materiasFiltradas = computed(() => {
   if (!usuarioCarrera.value) return materias.value;
-  return materias.value.filter(m => m.carrera_id === usuarioCarrera.value);
+  return materias.value.filter((m: any) => m.carrera_id === usuarioCarrera.value);
 });
 
 const gruposFiltrados = computed(() => {
   if (!usuarioCarrera.value) return grupos.value;
-  return grupos.value.filter(g => g.carrera_id === usuarioCarrera.value);
+  return grupos.value.filter((g: any) => g.carrera_id === usuarioCarrera.value);
 });
 
 const profesoresSinodales = computed(() => {
   if (!form.value.profesor_titular_id) return profesores.value;
-  return profesores.value.filter(p => p.id !== parseInt(form.value.profesor_titular_id));
+  return profesores.value.filter((p: any) => p.id !== parseInt(form.value.profesor_titular_id));
 });
 
 
@@ -473,33 +476,33 @@ const anteriorPaso = () => {
 };
 
 // Funciones de obtención de nombres
-const obtenerNombreMateria = (id: any) => {
-  const materia = materias.value.find(m => m.id == id);
+const obtenerNombreMateria = (id: string | number) => {
+  const materia = materias.value.find((m: any) => m.id == id);
   return materia ? materia.nombre : '';
 };
 
-const obtenerNombreGrupo = (id: any) => {
-  const grupo = grupos.value.find(g => g.id == id);
+const obtenerNombreGrupo = (id: string | number) => {
+  const grupo = grupos.value.find((g: any) => g.id == id);
   return grupo ? grupo.nombre : '';
 };
 
-const obtenerNombreTipoExamen = (id: any) => {
-  const tipo = tiposExamen.value.find(t => t.id == id);
+const obtenerNombreTipoExamen = (id: string | number) => {
+  const tipo = tiposExamen.value.find((t: any) => t.id == id);
   return tipo ? tipo.nombre : '';
 };
 
-const obtenerNombreAula = (id: any) => {
-  const aula = aulas.value.find(a => a.id == id);
+const obtenerNombreAula = (id: string | number) => {
+  const aula = aulas.value.find((a: any) => a.id == id);
   return aula ? aula.nombre : '';
 };
 
-const obtenerNombreProfesor = (id: any) => {
-  const profesor = profesores.value.find(p => p.id == id);
+const obtenerNombreProfesor = (id: string | number) => {
+  const profesor = profesores.value.find((p: any) => p.id == id);
   return profesor ? `${profesor.titulo} ${profesor.nombre}` : '';
 };
 
-const obtenerEmailProfesor = (id: any) => {
-  const profesor = profesores.value.find(p => p.id == id);
+const obtenerEmailProfesor = (id: string | number) => {
+  const profesor = profesores.value.find((p: any) => p.id == id);
   return profesor ? profesor.email : '';
 };
 
@@ -508,7 +511,8 @@ const formatearFechaCompleta = (fecha: string) => {
   const [year, month, day] = fecha.split('-');
   const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
                  'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-  return `${day} de ${meses[parseInt(month) - 1]} de ${year}`;
+  const monthIndex = month ? parseInt(month) - 1 : 0;
+  return `${day} de ${meses[monthIndex] || ''} de ${year}`;
 };
 
 // Submit

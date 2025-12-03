@@ -1,16 +1,16 @@
 import pool from '../config/database';
 
-// ============================================
+
 // CARRERAS
-// ============================================
+
 export const obtenerCarreras = async () => {
   const result = await pool.query('SELECT * FROM carrera ORDER BY nombre');
   return result.rows;
 };
 
-// ============================================
+
 // PERÍODOS
-// ============================================
+
 export const obtenerPeriodos = async (idCarrera?: number) => {
   const query = idCarrera
     ? 'SELECT * FROM periodo_examen WHERE id_carrera = $1 AND activo = TRUE ORDER BY fecha_inicio DESC'
@@ -32,9 +32,9 @@ export const crearPeriodo = async (periodo: any) => {
   return result.rows[0];
 };
 
-// ============================================
+
 // GRUPOS
-// ============================================
+
 export const obtenerGrupos = async (idCarrera?: number) => {
   const query = idCarrera
     ? 'SELECT * FROM grupo WHERE id_carrera = $1 AND activo = TRUE ORDER BY semestre, nombre'
@@ -70,9 +70,9 @@ export const obtenerMaterias = async (idCarrera?: number, semestre?: number) => 
   return result.rows;
 };
 
-// ============================================
+
 // PROFESORES
-// ============================================
+
 export const obtenerProfesores = async () => {
   const result = await pool.query(
     'SELECT * FROM profesor WHERE status = TRUE ORDER BY nombre'
@@ -97,9 +97,9 @@ export const obtenerProfesoresDisponibles = async (fecha: string, idHorario: num
   return result.rows;
 };
 
-// ============================================
+
 // AULAS
-// ============================================
+
 export const obtenerAulas = async () => {
   const result = await pool.query('SELECT * FROM aula ORDER BY nombre');
   return result.rows;
